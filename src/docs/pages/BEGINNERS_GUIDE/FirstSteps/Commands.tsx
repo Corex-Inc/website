@@ -1,5 +1,5 @@
 import { TipBox } from "@/components/docs/Docs";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const MCCommand = ({
   base,
