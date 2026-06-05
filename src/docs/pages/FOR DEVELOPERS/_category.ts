@@ -1,5 +1,5 @@
 export default {
     name: "FOR DEVELOPERS",
     emoji: "⚙️",
-    priority: 3
+    priority: 2
 }

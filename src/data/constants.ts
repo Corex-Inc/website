@@ -91,9 +91,9 @@ myVelocityScript:
 ] as const;
 
 export const PLATFORMS = [
-  { name: 'Paper', desc: 'Full scripting support for the most popular server software.', icon: Terminal },
-  { name: 'Folia', desc: 'Region-aware execution. Scripts just work - no thread handling required.', icon: Leaf },
-  { name: 'Velocity', desc: 'Same syntax on the proxy. Cross-server logic, global data.', icon: Globe },
+  { name: 'Paper', desc: 'Full scripting support for the most popular server software.', icon: "/shared/logos/paper.svg", size: 8 },
+  { name: 'Folia', desc: 'Region-aware execution. Scripts just work - no thread handling required.', icon: "/shared/logos/folia.svg", size: 10 },
+  { name: 'Velocity', desc: 'Same syntax on the proxy. Cross-server logic, global data.', icon: "https://assets.papermc.io/brand/velocity_logo_white.min.svg", size: 12 },
 ] as const;
 
 export const ICONS = { Github, Boxes } as const;

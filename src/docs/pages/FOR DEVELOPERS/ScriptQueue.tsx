@@ -202,8 +202,7 @@ public void run(ScriptQueue queue, Instruction inst) {
     Position target = /* resolve target location */;
 
     // Ask the queue to shift to target's region before re-running this command
-    queue.setTargetRegion(target);
-    throw new RegionRelocateException(target);
+    BukkitSchedulerAdapter.requireRegion(loc);
 
     // After the exception, executeNext() reschedules this exact instruction
     // on the correct Folia region thread and clears targetRegionPosition.

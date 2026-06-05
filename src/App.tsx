@@ -4,7 +4,6 @@ import { HomePage } from './pages/Home';
 import Docs from './pages/Documentation';
 import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
-import Lenis from "lenis";
 import { AuthProvider } from './contexts/AuthContext';
 import { AuthCallback } from './pages/AuthCallback';
 import { SettingsPage } from './pages/Settings';
@@ -34,23 +33,6 @@ function PageLoader() {
 }
 
 function App() {
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      smoothWheel: true,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-    };
-  }, []);
   return (
     <AuthProvider>
       <BrowserRouter>
