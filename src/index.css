@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@layer base {
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-950 text-surface-200 font-sans;
+  }
+
+  ::selection {
+    @apply bg-surface-500/30 text-white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-950;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-600;
+  }
+
+  @keyframes mc-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  .animate-mc-blink {
+    animation: mc-blink 1s steps(1) infinite;
+  }
+
+  @font-face {
+    font-family: 'Minecraft';
+    src: url('/fonts/MinecraftRegular-Bmg3.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Minecraft';
+    src: url('/fonts/MinecraftBold-nMK1.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Minecraft';
+    src: url('/fonts/MinecraftItalic-R8Mo.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Minecraft';
+    src: url('/fonts/MinecraftBoldItalic-1y1e.otf') format('opentype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+}
+
+@layer components {
+  .code-block {
+    @apply bg-surface-900 border border-surface-800 rounded-lg font-mono text-sm;
+  }
+
+  .code-tag {
+    @apply text-surface-300;
+  }
+
+  .code-keyword {
+    @apply text-surface-100 font-semibold;
+  }
+
+  .code-comment {
+    @apply text-surface-500 italic;
+  }
+
+  .code-string {
+    @apply text-surface-400;
+  }
+
+  .glow-line {
+    @apply absolute h-px bg-gradient-to-r from-transparent via-surface-400 to-transparent;
+  }
+
+  .btn-primary {
+    @apply px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200;
+    @apply bg-white text-surface-950 hover:bg-surface-200 active:bg-surface-300;
+    @apply shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200;
+    @apply bg-surface-800 text-surface-200 hover:bg-surface-700 hover:text-white;
+    @apply border border-surface-700;
+  }
+
+  .btn-ghost {
+    @apply px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200;
+    @apply text-surface-400 hover:text-surface-200 hover:bg-surface-800/50;
+  }
+
+  .feature-card {
+    @apply p-6 rounded-xl border border-surface-800/50 bg-surface-900/50;
+    @apply transition-all duration-300;
+    @apply hover:border-surface-700 hover:bg-surface-850/80;
+  }
+
+  .shiki-wrapper pre {
+    @apply !bg-transparent !m-0 !rounded-none overflow-x-auto;
+    padding: 1rem 1.25rem;
+  }
+  
+  .shiki-wrapper pre code {
+    @apply !bg-transparent !p-0 !text-sm !leading-relaxed;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+    counter-reset: line;
+  }
+  
+  .shiki-wrapper pre::-webkit-scrollbar {
+    height: 4px;
+  }
+  .shiki-wrapper pre::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .shiki-wrapper pre::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+  .shiki-wrapper pre::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  
+}
+
+#nprogress .bar {
+  background: #ffffff !important;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 15px #ffffff, 0 0 8px #ffffff !important;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: #ffffff !important;
+  border-left-color: #ffffff !important;
+}
