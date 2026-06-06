@@ -19,7 +19,7 @@ export default function Mechanisms() {
       <DocsCodeBlock lang="java" title="ShopTag - implementing Adjustable" text={`
 public class ShopTag implements AbstractTag, Adjustable {
 
-    public static final MechanismProcessor<ShopTag> MECHANISMS = new MechanismProcessor<>();
+    public static final MechanismProcessor<ShopTag> MECHANISMS_PROCESSOR = new MechanismProcessor<>();
 
     @Override
     public Adjustable duplicate() {
@@ -28,12 +28,12 @@ public class ShopTag implements AbstractTag, Adjustable {
 
     @Override
     public AbstractTag applyMechanism(String mechanism, AbstractTag value) {
-        return MECHANISMS.process(this, mechanism, value);
+        return MECHANISMS_PROCESSOR.process(this, mechanism, value);
     }
 
     @Override
     public MechanismProcessor<? extends AbstractTag> getMechanismProcessor() {
-        return MECHANISMS;
+        return MECHANISMS_PROCESSOR;
     }
 }
 `} />
@@ -49,14 +49,14 @@ public class ShopTag implements AbstractTag, Adjustable {
 public static void register() {
 
     // Set the shop's display name
-    MECHANISMS.registerMechanism("name", (obj, val) -> {
+    MECHANISMS_PROCESSOR.registerMechanism("name", (obj, val) -> {
         ShopTag copy = (ShopTag) obj.duplicate();
         copy.setName(val.identify());
         return copy;
     });
 
     // Set discount - validate that it's a valid number first
-    MECHANISMS.registerMechanism("discount", (obj, val) -> {
+    MECHANISMS_PROCESSOR.registerMechanism("discount", (obj, val) -> {
         if (!(val instanceof ElementTag el) || !el.isDouble()) return obj;
         ShopTag copy = (ShopTag) obj.duplicate();
         copy.setDiscount(el.asDouble());
@@ -80,10 +80,10 @@ public static void register() {
 
       <DocsCodeBlock lang="corex" title="Using mechanisms from a .cx script" text={`
 # Via the global .with[] tag - returns a modified copy inline
-- def myShop <shop[market_east].with[name=Grand Market|discount=0.2]>
+- def myShop <shop[market_east].with[name=Grand Market;discount=0.2]>
 
-# Via the adjust command - modifies a def in-place
-- adjust <def[myShop]> name:Grand Market
+# Via the adjust command - modifies a definition in-place
+- adjust <[myShop]> name:Grand Market
 `} />
 
       <p>

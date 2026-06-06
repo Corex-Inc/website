@@ -7,6 +7,9 @@ import 'nprogress/nprogress.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { AuthCallback } from './pages/AuthCallback';
 import { SettingsPage } from './pages/Settings';
+import DocumentsLayout from './pages/documents/DocumentsLayout';
+import TermsOfService from './pages/documents/TermsOfService';
+import PrivacyPolicy from './pages/documents/PrivacyPolicy';
 
 nprogress.configure({ 
   showSpinner: false, 
@@ -44,6 +47,12 @@ function App() {
           
           <Route path="/login/:provider" element={<AuthCallback />} />
           <Route path="/link/:provider" element={<AuthCallback />} />
+
+          <Route path="/documents" element={<DocumentsLayout />}>
+            <Route index element={<TermsOfService />} />
+            <Route path="terms" element={<TermsOfService />} />
+            <Route path="privacy" element={<PrivacyPolicy />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
