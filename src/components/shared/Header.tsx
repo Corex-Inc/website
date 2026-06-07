@@ -102,9 +102,14 @@ export function Header() {
                 >
                   <div className="flex flex-col items-end">
                     <div className="flex items-center gap-1.5">
-                       <span className={`font-medium text-white transition-all duration-500 flex items-center gap-1 ${scrolled ? 'text-sm' : 'text-base'}`}>
-                         {user.username}
+                      <div className='flex flex-col items-end'>
+                       <span className={`font-medium text-white transition-all duration-500 flex gap-1 ${scrolled ? 'text-sm' : 'text-base'}`}>
+                         {user.name}
                        </span>
+                       <span className={`font-medium text-gray-400 transition-all duration-500 gap-1 ${scrolled ? 'text-[10px]' : 'text-xs'}`}>
+                         @{user.username}
+                       </span>
+                      </div>
                        <ChevronDown className={`text-surface-400 transition-transform duration-300 w-4 h-4 ${open ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
