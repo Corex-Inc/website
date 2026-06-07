@@ -10,6 +10,7 @@ import { SettingsPage } from './pages/Settings';
 import DocumentsLayout from './pages/documents/DocumentsLayout';
 import TermsOfService from './pages/documents/TermsOfService';
 import PrivacyPolicy from './pages/documents/PrivacyPolicy';
+import { MetaPage } from './pages/meta/MetaPage';
 
 nprogress.configure({ 
   showSpinner: false, 
@@ -42,6 +43,7 @@ function App() {
         <PageLoader />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/meta" element={<MetaPage />} />
           <Route path="/documentation/*" element={<Docs />} />
           <Route path="/settings" element={<SettingsPage />} />
           

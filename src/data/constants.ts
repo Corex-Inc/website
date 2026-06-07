@@ -5,7 +5,6 @@ import {
   Leaf,
   Globe,
   RefreshCw,
-  Terminal,
   BookOpen,
   Download,
   FileCode,
@@ -18,7 +17,7 @@ export const BASE_API_URL = "https://server.corexinc.dev"
 
 export const HERO_BUTTONS = [
   { label: 'Documentation', icon: BookOpen, style: 'primary' as const, href: '/documentation' },
-  { label: 'Meta Docs', icon: FileCode, style: 'secondary' as const, href: '#' },
+  { label: 'Meta Docs', icon: FileCode, style: 'secondary' as const, href: '/meta' },
   { label: 'Download', icon: Download, style: 'secondary' as const, href: '#' },
   { label: 'Sponsor', icon: Coffee, style: 'ghost' as const, href: '#' },
 ] as const;

@@ -4,6 +4,7 @@ import darkPlus from '../grammars/2026-dark.json';
 import corexGrammar from '../grammars/corex.tmLanguage.json';
 
 import langJava from 'shiki/langs/java.mjs';
+import langXML from 'shiki/langs/xml.mjs';
 
 let highlighterInstance: HighlighterCore | null = null;
 let initPromise: Promise<HighlighterCore> | null = null;
@@ -21,7 +22,8 @@ async function initHighlighter(): Promise<HighlighterCore> {
   initPromise = createHighlighterCore({
     themes: [darkPlus as any],
     langs: [COREX_LANG as any,
-            langJava
+            langJava,
+            langXML,
            ],
     engine: createOnigurumaEngine(() => fetch('/onig.wasm').then(r => r.arrayBuffer())),
   }).then((h) => {
