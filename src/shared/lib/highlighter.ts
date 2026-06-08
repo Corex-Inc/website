@@ -1,9 +1,10 @@
-import { createHighlighterCore, type HighlighterCore, type LanguageInput, type ThemeInput, type ThemeRegistrationAny } from 'shiki/core';
+import { createHighlighterCore, type HighlighterCore } from 'shiki/core';
 import { createOnigurumaEngine } from 'shiki/engine/oniguruma';
-import langJava from 'shiki/langs/java.mjs';
-import langXML from 'shiki/langs/xml.mjs';
 import darkPlus from '../grammars/2026-dark.json';
 import corexGrammar from '../grammars/corex.tmLanguage.json';
+
+import langJava from 'shiki/langs/java.mjs';
+import langXML from 'shiki/langs/xml.mjs';
 
 let highlighterInstance: HighlighterCore | null = null;
 let initPromise: Promise<HighlighterCore> | null = null;
@@ -19,8 +20,8 @@ async function initHighlighter(): Promise<HighlighterCore> {
   if (initPromise) return initPromise;
 
   initPromise = createHighlighterCore({
-    themes: [darkPlus as ThemeInput],
-    langs: [COREX_LANG as LanguageInput,
+    themes: [darkPlus as any],
+    langs: [COREX_LANG as any,
             langJava,
             langXML,
            ],
@@ -35,7 +36,7 @@ async function initHighlighter(): Promise<HighlighterCore> {
 
 export async function highlightCode(code: string, lang = 'corex'): Promise<string> {
   const highlighter = await initHighlighter();
-  const themeName = (darkPlus as ThemeRegistrationAny).name || '2026-dark';
+  const themeName = (darkPlus as any).name || '2026-dark';
 
   return highlighter.codeToHtml(code, {
     lang,

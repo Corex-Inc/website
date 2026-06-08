@@ -1,4 +1,4 @@
-import { Download, BookOpen, FileCode, ExternalLink } from 'lucide-react';
+import { BookOpen, Download, ExternalLink, FileCode } from 'lucide-react';
 
 export default function CTA() {
   return (
@@ -17,7 +17,7 @@ export default function CTA() {
           <a href="/documentation" className="btn-secondary flex items-center gap-2">
             <BookOpen className="w-4 h-4" /> Documentation
           </a>
-          <a href="#" className="btn-secondary flex items-center gap-2">
+          <a href="/meta" className="btn-secondary flex items-center gap-2">
             <FileCode className="w-4 h-4" /> Meta Docs
             <ExternalLink className="w-3 h-3 text-surface-500" />
           </a>

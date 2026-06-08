@@ -1,15 +1,16 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { authService } from '../lib/authService';
-import Button from '@/components/shared/Button';
 import { CorexLoader } from '@/components/shared/loading/corex';
+import Button from '@/shared/components/Button';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
+import { authService } from '../lib/authService';
 
 export function AuthCallback() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { login, refreshProfile } = useAuth();
+  const login = useAuthStore((state) => state.login);
+  const refreshProfile = useAuthStore((state) => state.refreshProfile);
   const [error, setError] = useState<string | null>(null);
 
   const hasRun = useRef(false);
@@ -55,7 +56,8 @@ export function AuthCallback() {
           return;
         }
 
-        let res;
+        // biome-ignore lint/suspicious/noExplicitAny: Axios response data -> Any
+        let res: any;
         if (provider === 'discord') {
           res = await authService.loginDiscord(code, redirectUri);
         } else if (provider === 'minecraft') {
@@ -63,7 +65,7 @@ export function AuthCallback() {
         }
 
         if (!res?.success || !res.accessToken) {
-          setError('Login failed: ' + (res?.message || 'Unknown error'));
+          setError(`Login failed: ${res?.message || 'Unknown error'}`);
           return;
         }
 
@@ -78,6 +80,7 @@ export function AuthCallback() {
 
         login(res);
         navigate('/');
+      // biome-ignore lint/suspicious/noExplicitAny:-
       } catch (err: any) {
         console.error('Auth error:', err);
         const message =

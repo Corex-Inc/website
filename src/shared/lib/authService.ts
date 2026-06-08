@@ -19,10 +19,15 @@ export interface UserProfile {
     discord?: { id: string; username: string; email?: string; avatar?: string };
     minecraft?: { uuid?: string; username: string };
   };
+  data?: {
+    likes?: number;
+    posts?: number;
+    [key: string]: any;
+  };
   createdAt?: string;
 }
 
-export interface AuthResponse {
+interface AuthResponse {
   success: boolean;
   profile: UserProfile;
   refreshToken: string;
@@ -120,10 +125,10 @@ export const authService = {
       localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(authData.profile));
     }
     if ('accessToken' in authData) {
-      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, authData.accessToken);
+      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, authData.accessToken!);
     }
     if ('refreshToken' in authData) {
-      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, authData.refreshToken);
+      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, authData.refreshToken!);
     }
   },
 

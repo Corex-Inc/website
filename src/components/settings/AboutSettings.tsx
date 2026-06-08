@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api';
 
 interface AboutSettingsProps {
@@ -11,23 +12,19 @@ const MAX_ABOUT_LENGTH = 350;
 export default function AboutSettings({ about: initialAbout, onDirty }: AboutSettingsProps) {
   const [about, setAbout] = useState(initialAbout || '');
   const [savedAbout, setSavedAbout] = useState(initialAbout || '');
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setAbout(e.target.value.slice(0, MAX_ABOUT_LENGTH));
   };
 
-  const save = async () => {
-    setLoading(true);
+  const save = useCallback(async () => {
     try {
       await apiClient.patch('api/v1/settings/about', { about: about.trim() });
       setSavedAbout(about.trim());
     } catch (err: any) {
       console.error('Failed to update about:', err);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [about.trim]);
 
   const isChanged = about.trim() !== savedAbout;
   const charCount = about.trim().length;
@@ -35,7 +32,7 @@ export default function AboutSettings({ about: initialAbout, onDirty }: AboutSet
 
   useEffect(() => {
     onDirty('about', isChanged, save);
-  }, [about, savedAbout]);
+  }, [isChanged, onDirty, save]);
 
   return (
     <div className="space-y-5">
@@ -43,7 +40,7 @@ export default function AboutSettings({ about: initialAbout, onDirty }: AboutSet
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-surface-300">Bio</label>
+          <label htmlFor="bio" className="text-sm font-medium text-surface-300">Bio</label>
           <span className={`text-xs ${charCount > MAX_ABOUT_LENGTH * 0.9 ? 'text-amber-400' : 'text-surface-500'}`}>
             {charCount} / {MAX_ABOUT_LENGTH}
           </span>
@@ -51,6 +48,7 @@ export default function AboutSettings({ about: initialAbout, onDirty }: AboutSet
 
         <textarea
           value={about}
+          id="bio"
           onChange={handleChange}
           placeholder="Write something about yourself..."
           rows={5}

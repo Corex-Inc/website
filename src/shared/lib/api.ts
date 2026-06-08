@@ -6,10 +6,8 @@ export const apiClient = axios.create({
 });
 
 let isRefreshing = false;
-// biome-ignore lint/suspicious/noExplicitAny:-
 let failedQueue: Array<{ resolve: (value?: unknown) => void; reject: (reason?: any) => void }> = [];
 
-// biome-ignore lint/suspicious/noExplicitAny:-
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach(prom => {
     if (error) {

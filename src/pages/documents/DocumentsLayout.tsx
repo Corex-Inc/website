@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { FileText, Shield, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, Shield } from 'lucide-react';
-import { Header } from '@/components/shared/Header';
-import { Footer } from '@/components/shared/Footer';
+import { Footer } from '@/widgets/Footer';
+import { Header } from '@/widgets/Header';
 
 const SECTIONS = [
   { path: 'terms', title: 'Terms of Service', icon: FileText },
@@ -31,7 +31,7 @@ export default function DocumentsLayout() {
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
-  }, [location.pathname]);
+  }, []);
 
   return (
     <>
@@ -52,6 +52,7 @@ export default function DocumentsLayout() {
               <button
                 className="text-gray-400 hover:text-white p-1 -mr-1 transition-colors outline-none"
                 onClick={() => setIsMobileMenuOpen(false)}
+                type="button"
               >
                 <X size={20} />
               </button>

@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState, useCallback, lazy, Suspense } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { authService } from '../lib/authService';
-import { Header } from '../components/shared/Header';
-import { Footer } from '../components/shared/Footer';
-import { RefreshCw, User, Link2, AlertTriangle, Check } from 'lucide-react';
-import nprogress from 'nprogress';
 import { AnimatePresence, motion } from 'framer-motion';
+import { AlertTriangle, Check, Link2, type LucideIcon, User } from 'lucide-react';
+import nprogress from 'nprogress';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { CorexLoader } from '@/components/shared/loading/corex';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
+import { Footer } from '@/widgets/Footer';
+import { Header } from '@/widgets/Header';
+import { authService } from '../lib/authService';
 
 const ProfileSettings = lazy(() => import( '../components/settings/ProfileSettings'));
 const AboutSettings = lazy(() => import( '../components/settings/AboutSettings'));
@@ -14,7 +14,7 @@ const ConnectionsSettings = lazy(() => import( '../components/settings/Connectio
 
 type SectionId = 'profile' | 'connections' | 'account';
 
-const SIDEBAR_ITEMS: { id: SectionId; label: string; icon: React.FC<any> }[] = [
+const SIDEBAR_ITEMS: { id: SectionId; label: string; icon: LucideIcon }[] = [
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'connections', label: 'Connected Accounts', icon: Link2 },
 ];
@@ -36,7 +36,9 @@ const SHAKE_STYLE = `
 `;
 
 export function SettingsPage() {
-  const { user, refreshProfile } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const refreshProfile = useAuthStore((state) => state.refreshProfile);
+  // biome-ignore lint/suspicious/noExplicitAny: Any type of response
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<SectionId>('profile');
@@ -127,7 +129,7 @@ export function SettingsPage() {
     fetchSettings();
   }, [user]);
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     nprogress.start();
     try {
       await refreshProfile();
@@ -138,17 +140,17 @@ export function SettingsPage() {
     } finally {
       nprogress.done();
     }
-  };
+  }, [refreshProfile]);
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
-      if (!event.data || event.data.type !== 'auth:link-complete') return;
+      if (event.data?.type !== 'auth:link-complete') return;
       await handleRefresh();
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [handleRefresh]);
 
   if (!user) {
     return (
@@ -183,6 +185,7 @@ export function SettingsPage() {
                   {SIDEBAR_ITEMS.map(({ id, label, icon: Icon }) => (
                     <button
                       key={id}
+                      type="button"
                       onClick={() => handleSectionChange(id)}
                       className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
                         activeSection === id

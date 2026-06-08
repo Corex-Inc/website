@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { AlertTriangle, Check } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api';
 
 interface ProfileSettingsProps {
@@ -41,32 +41,30 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
   const [savedName, setSavedName] = useState(initialName || '');
   const [nameError, setNameError] = useState<NameError>(null);
 
-  const [loading, setLoading] = useState(false);
-
-  const validateAvatar = (value: string): AvatarError => {
+  const validateAvatar = useCallback((value: string): AvatarError => {
     if (!value.trim()) return null;
     const trimmed = value.trim();
     if (MINECRAFT_USERNAME_REGEX.test(trimmed) || SKIN_HASH_REGEX.test(trimmed)) return null;
     if (trimmed.length < 3 || trimmed.length > 64) return 'INVALID_LENGTH';
     if (trimmed.length >= 3 && trimmed.length <= 16) return 'INVALID_CHARS';
     return 'INVALID_FORMAT';
-  };
+  }, []);
 
-  const validateUsername = (value: string): UsernameError => {
+  const validateUsername = useCallback((value: string): UsernameError => {
     if (!value.trim()) return null;
     const trimmed = value.trim();
     if (trimmed.includes('..')) return 'DOUBLE_DOT';
     if (!USERNAME_RE.test(trimmed)) return 'INVALID';
     return null;
-  };
+  }, []);
 
-  const validateName = (value: string): NameError => {
+  const validateName = useCallback((value: string): NameError => {
     const trimmed = value.trim();
     if (!trimmed) return null;
     if (trimmed.length < MIN_NAME_LENGTH) return 'TOO_SHORT';
     if (trimmed.length > MAX_NAME_LENGTH) return 'TOO_LONG';
     return null;
-  };
+  }, []);
 
   const isAvatarChanged = avatar.trim() !== savedAvatar;
   const isAvatarValid = !validateAvatar(avatar);
@@ -75,59 +73,50 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
   const isNameChanged = name.trim() !== savedName;
   const isNameValid = !validateName(name);
 
-  const saveAvatar = async () => {
+  const saveAvatar = useCallback(async () => {
     const err = validateAvatar(avatar);
     if (err) { setAvatarError(err); return; }
-    setLoading(true);
     try {
       await apiClient.patch('/api/v1/settings/avatar', { avatar: avatar.trim() });
       setSavedAvatar(avatar.trim());
     } catch {
       setAvatarError('INVALID_FORMAT');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [avatar, validateAvatar]);
 
-  const saveUsername = async () => {
+  const saveUsername = useCallback(async () => {
     const err = validateUsername(username);
     if (err) { setUsernameError(err); return; }
-    setLoading(true);
     try {
       await apiClient.patch('/api/v1/settings/username', { username: username.trim() });
       setSavedUsername(username.trim());
     } catch {
       setUsernameError('INVALID');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [username, validateUsername]);
 
-  const saveName = async () => {
+  const saveName = useCallback(async () => {
     const err = validateName(name);
     if (err) { setNameError(err); return; }
-    setLoading(true);
     try {
       await apiClient.patch('/api/v1/settings/name', { name: name.trim() });
       setSavedName(name.trim());
     } catch {
       setNameError('TOO_LONG');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [name, validateName]);
 
   useEffect(() => {
     onDirty('avatar', isAvatarChanged && isAvatarValid, saveAvatar);
-  }, [avatar, savedAvatar]);
+  }, [isAvatarChanged, isAvatarValid, onDirty, saveAvatar]);
 
   useEffect(() => {
     onDirty('username', isUsernameChanged && isUsernameValid, saveUsername);
-  }, [username, savedUsername]);
+  }, [isUsernameChanged, isUsernameValid, onDirty, saveUsername]);
 
   useEffect(() => {
     onDirty('name', isNameChanged && isNameValid, saveName);
-  }, [name, savedName]);
+  }, [isNameChanged, isNameValid, onDirty, saveName]);
 
   const avatarErrorMsg = () => {
     switch (avatarError) {
@@ -166,13 +155,12 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
     }`;
 
   return (
-    <>
       <div className="space-y-7">
         <h2 className="text-lg font-semibold text-white">Profile</h2>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium text-surface-300">
+            <label htmlFor="skin" className="block text-sm font-medium text-surface-300">
               Minecraft Username or Skin Hash
             </label>
           </div>
@@ -194,6 +182,7 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
 
             <div className='flex-1'>
               <input
+                id="skin"
                 type="text"
                 value={avatar}
                 onChange={(e) => {
@@ -201,7 +190,7 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
                   setAvatarError(validateAvatar(e.target.value));
                 }}
                 placeholder="e.g., Notch or 64-char skin hash"
-                className={inputClass(!!avatarError, !avatarError && avatar.trim() !== '' && isAvatarValid) + ' font-medium flex-1'}
+                className={`${inputClass(!!avatarError, !avatarError && avatar.trim() !== '' && isAvatarValid)} font-medium flex-1`}
               />
 
               {avatarError ? (
@@ -224,7 +213,7 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-surface-300">Username</label>
+              <label htmlFor="username" className="block text-sm font-medium text-surface-300">Username</label>
               <span className={`text-xs ${username.trim().length > 27 ? 'text-amber-400' : 'text-surface-500'}`}>
                 {username.trim().length} / 32
               </span>
@@ -241,6 +230,7 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
               </span>
               <input
                 type="text"
+                id="username"
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value.slice(0, 32));
@@ -267,12 +257,13 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-surface-300">Display Name</label>
+              <label htmlFor="text" className="block text-sm font-medium text-surface-300">Display Name</label>
               <span className={`text-xs ${name.trim().length > MAX_NAME_LENGTH * 0.85 ? 'text-amber-400' : 'text-surface-500'}`}>
                 {name.trim().length} / {MAX_NAME_LENGTH}
               </span>
             </div>
             <input
+              id="text"
               type="text"
               value={name}
               onChange={(e) => {
@@ -299,6 +290,5 @@ export default function ProfileSettings({ avatar: initialAvatar, username: initi
 
         </div>
       </div>
-    </>
   );
 }

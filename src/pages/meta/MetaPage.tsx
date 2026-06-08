@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { apiClient } from '@/lib/api';
-import { Header } from '@/components/shared/Header';
-import { MetaSidebar } from './MetaSidebar';
+import { Header } from '@/widgets/Header.tsx';
 import { MetaDetail } from './MetaDetail';
+import { MetaSidebar } from './MetaSidebar';
 import type { MetaFilter, MetaItem } from './types.ts';
 
 const DEFAULT_ADDON = 'Corex';
@@ -99,6 +99,7 @@ export function MetaPage() {
   
   const displayItems = useMemo(() => {
     if (!objectFilter) return baseItems;
+    // biome-ignore lint/suspicious/noExplicitAny: -
     return baseItems.filter(item => 'object' in item && (item as any).object === objectFilter);
   }, [baseItems, objectFilter]);
 
@@ -106,7 +107,9 @@ export function MetaPage() {
     if (activeFilter !== 'tag' && activeFilter !== 'mechanism') return [];
     const objs = new Set<string>();
     baseItems.forEach(item => {
+      // biome-ignore lint/suspicious/noExplicitAny: -
       if ('object' in item && (item as any).object) {
+        // biome-ignore lint/suspicious/noExplicitAny: -
         objs.add((item as any).object as string);
       }
     });
@@ -189,9 +192,9 @@ export function MetaPage() {
             ) : displayItems.length === 0 ? (
               <p className="text-center text-sm text-white/30 py-20">No matching details found.</p>
             ) : (
-              displayItems.slice(0, visibleCount).map((item, index) => (
+              displayItems.slice(0, visibleCount).map((item) => (
                 <MetaDetail 
-                  key={`${item.type}-${item.name}-${index}`} 
+                  key={`${item.type}-${item.name}`} 
                   item={item} 
                   selectedAddon={selectedAddon} 
                 />

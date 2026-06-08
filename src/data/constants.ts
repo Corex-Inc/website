@@ -1,17 +1,4 @@
-import {
-  Zap,
-  Tag,
-  Save,
-  Leaf,
-  Globe,
-  RefreshCw,
-  BookOpen,
-  Download,
-  FileCode,
-  Boxes,
-  Github,
-  Coffee,
-} from 'lucide-react';
+import { BookOpen, Coffee, Download, FileCode, Globe, Leaf, RefreshCw, Save, Tag, Zap } from 'lucide-react';
 
 export const BASE_API_URL = "https://server.corexinc.dev"
 
@@ -94,5 +81,3 @@ export const PLATFORMS = [
   { name: 'Folia', desc: 'Region-aware execution. Scripts just work - no thread handling required.', icon: "/shared/logos/folia.svg", size: 10 },
   { name: 'Velocity', desc: 'Same syntax on the proxy. Cross-server logic, global data.', icon: "https://assets.papermc.io/brand/velocity_logo_white.min.svg", size: 12 },
 ] as const;
-
-export const ICONS = { Github, Boxes } as const;

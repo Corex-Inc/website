@@ -1,7 +1,6 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import { highlightCode } from "@/lib/highlighter";
+import { Check, ChevronDown, Copy } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { highlightCode } from '@/lib/highlighter';
 
 interface DocsCodeBlockProps {
   lang?: string;
@@ -38,7 +37,7 @@ export function DocsCodeBlock({
 
   useEffect(() => {
     if (contentRef.current) setContentHeight(contentRef.current.scrollHeight);
-  }, [html]);
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code).then(() => {
@@ -78,6 +77,7 @@ export function DocsCodeBlock({
         <div className="ml-auto shrink-0">
           <button
             onClick={handleCopy}
+            type="button"
             aria-label="Copy code"
             className="
               flex items-center gap-1.5 px-2.5 py-1 rounded
@@ -89,12 +89,12 @@ export function DocsCodeBlock({
           >
             {copied ? (
               <>
-                <CheckIcon />
+                <Check />
                 <span className="text-green-400">Copied</span>
               </>
             ) : (
               <>
-                <CopyIcon />
+                <Copy />
                 <span>Copy</span>
               </>
             )}
@@ -110,6 +110,7 @@ export function DocsCodeBlock({
           {html ? (
             <div
               className="shiki-wrapper text-sm leading-relaxed"
+              // biome-ignore lint/security/noDangerouslySetInnerHtml:-
               dangerouslySetInnerHTML={{ __html: html }}
             />
           ) : (
@@ -130,6 +131,7 @@ export function DocsCodeBlock({
       {canCollapse && (
         <button
           onClick={() => setCollapsed((v) => !v)}
+          type="button"
           className="
             w-full flex items-center justify-center gap-1.5
             py-2 px-4 text-xs font-mono text-white/25
@@ -138,40 +140,11 @@ export function DocsCodeBlock({
             transition-all duration-150 select-none
           "
         >
-          <ChevronIcon className={`w-3 h-3 transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`} />
+          <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${collapsed ? "" : "rotate-180"}`} />
           <span>{collapsed ? `Show all ${lineCount} lines` : "Collapse"}</span>
         </button>
       )}
     </div>
-  );
-}
-
-
-function CopyIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="shrink-0">
-      <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"
-        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="shrink-0">
-      <path d="M3 8l3.5 3.5L13 4" stroke="currentColor" strokeWidth="1.5"
-        strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ChevronIcon({ className }: { className?: string }) {
-  return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className={className}>
-      <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5"
-        strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }
 

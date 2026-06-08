@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion, type HTMLMotionProps } from 'framer-motion';
+import { type HTMLMotionProps, motion } from 'framer-motion';
+import type React from 'react';
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
   size?: 'small' | 'medium' | 'large';

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import React from 'react';
+import type React from 'react';
 
 export const ConfigOption = ({ name, type, def, children }: { name: string, type: string, def: string, children: React.ReactNode }) => (
     <div className="!my-8 !border !border-gray-800 !rounded-lg !bg-[#050505] overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.5)]">

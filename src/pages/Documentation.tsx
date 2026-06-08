@@ -1,12 +1,12 @@
-import { useState, useEffect, Suspense } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { docsModule } from '../docs';
-import { DocPage } from '../docs/registry';
-import { ChevronRight, ChevronLeft, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Header } from '@/components/shared/Header';
-import { Footer } from '@/components/shared/Footer';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CorexLoader } from '@/components/shared/loading/corex';
+import { Footer } from '@/widgets/Footer';
+import { Header } from '@/widgets/Header';
+import { docsModule } from '../docs';
+import type { DocPage } from '../docs/registry';
 
 interface TreeNode extends DocPage {
   children: TreeNode[];
@@ -16,10 +16,10 @@ const NavItem = ({ node, level = 0, currentPath, onNavigate }: { node: TreeNode,
   const isActive = currentPath === node.path;
   const hasChildren = node.children.length > 0;
   
-  const isChildActive = (n: TreeNode): boolean => {
+  const isChildActive = useCallback((n: TreeNode): boolean => {
     if (n.path === currentPath) return true;
     return n.children.some(isChildActive);
-  };
+  }, [currentPath]);
   
   const [isExpanded, setIsExpanded] = useState(() => isChildActive(node));
 
@@ -27,7 +27,7 @@ const NavItem = ({ node, level = 0, currentPath, onNavigate }: { node: TreeNode,
     if (isChildActive(node)) {
       setIsExpanded(true);
     }
-  }, [currentPath, node]);
+  }, [node, isChildActive]);
 
   const handleLinkClick = (e: React.MouseEvent) => {
     if (isActive && hasChildren) {
@@ -61,6 +61,7 @@ const NavItem = ({ node, level = 0, currentPath, onNavigate }: { node: TreeNode,
 
         {hasChildren && (
           <button 
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               setIsExpanded(!isExpanded);
@@ -130,6 +131,7 @@ export default function Docs() {
 
   const sortTree = (nodes: TreeNode[]) => {
     nodes.sort((a, b) => a.priority - b.priority);
+    // biome-ignore lint/suspicious/useIterableCallbackReturn: idk how fix this
     nodes.forEach(n => sortTree(n.children));
   };
   sortTree(rootNodes);
@@ -166,6 +168,7 @@ export default function Docs() {
     if (!path && visualOrder.length > 0) {
       navigate(`/documentation/${visualOrder[0].path}`, { replace: true });
     }
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Nahuya eto nado
   }, [path, navigate, visualOrder]);
 
   if (!currentPage) {
@@ -200,6 +203,7 @@ export default function Docs() {
             <span className="font-syne font-bold text-white uppercase tracking-wider text-sm">Navigation</span>
             <button 
               className="text-gray-400 hover:text-white p-1 -mr-1 transition-colors outline-none" 
+              type="button"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <X size={20} />

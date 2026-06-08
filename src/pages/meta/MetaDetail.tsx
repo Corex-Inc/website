@@ -1,7 +1,7 @@
-import { AlertTriangle, ArrowUpRight, Ban, Clock, MapPin } from 'lucide-react';
-import type {MetaItem, MetaCommand, MetaTag, MetaObject, MetaFormatter, MetaMechanism, MetaEvent } from './types.ts';
+import { AlertTriangle, ArrowUpRight, Ban, Clock } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { highlightCode } from '@/lib/highlighter';
-import { useEffect, useState, useMemo } from 'react';
+import type { MetaCommand, MetaDefault, MetaEvent, MetaFormatter, MetaItem, MetaMechanism, MetaObject, MetaTag } from './types.ts';
 
 function asLines(val: string | string[] | undefined): string[] {
   if (!val) return [];
@@ -24,8 +24,8 @@ function Description({ value }: { value: string | string[] | undefined }) {
   return (
     <Field label="Description">
       <div className="space-y-1.5">
-        {lines.map((line, i) => (
-          <p key={i} className="text-[15px] text-white/80 leading-relaxed">{line}</p>
+        {lines.map((line) => (
+          <p key={line} className="text-[15px] text-white/80 leading-relaxed">{line}</p>
         ))}
       </div>
     </Field>
@@ -66,10 +66,11 @@ function UsageBlock({ value }: { value: string | string[] | undefined }) {
   return (
     <Field label="Snippet">
       <div className="space-y-2 bg-[#121314] border border-white/[0.05] rounded-lg p-4 overflow-auto [&::-webkit-scrollbar]:h-[6px]">
-        {highlightedHtml.map((html, i) => (
-          <div key={i} className="font-mono text-[13px] py-2 text-white/80 whitespace-pre-wrap break-words">
+        {highlightedHtml.map((html) => (
+          <div key={html} className="font-mono text-[13px] py-2 text-white/80 whitespace-pre-wrap break-words">
             <pre
               className="m-0 bg-transparent p-0"
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: Highlighter
               dangerouslySetInnerHTML={{ __html: html }}
             />
           </div>
@@ -97,15 +98,12 @@ function ItemProperties({ item }: { item: MetaItem }) {
     if (ev.cancellable !== undefined) {
       badges.push(<PropertyBadge key="cancellable" icon={Ban} label="Cancellable" colorClass="bg-red-500/10 border-red-500/20 text-red-400" />);
     }
-    if ('hasLocation' in ev && (ev as any).hasLocation) {
-      badges.push(<PropertyBadge key="location" icon={MapPin} label="Location" colorClass="bg-green-500/10 border-green-500/20 text-green-400" />);
-    }
   }
 
   if (item.type === 'command') {
     const cmd = item as MetaCommand;
     
-    if (cmd.waitable && cmd.waitable != undefined) {
+    if (cmd.waitable !== undefined) {
       badges.push(<PropertyBadge key="waitable" icon={Clock} label="Waitable" colorClass="bg-blue-500/10 border-blue-500/20 text-blue-400" />);
     }
   }
@@ -130,7 +128,7 @@ function CommandDetail({ item }: { item: MetaCommand }) {
       return;
     }
     
-    highlightCode("- " + item.syntax, 'corex')
+    highlightCode((`- ${item.syntax}`), 'corex')
       .then(res => {
         if (active) setHighlightedSyntax(res);
       })
@@ -146,6 +144,7 @@ function CommandDetail({ item }: { item: MetaCommand }) {
       <Field label="Syntax">
         <div className="bg-[#121314] border border-white/[0.05] rounded-lg px-4 py-3">
           {highlightedSyntax ? (
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Highlighter
             <div className='overflow-auto [&::-webkit-scrollbar]:h-[3px]' dangerouslySetInnerHTML={{ __html: highlightedSyntax }} />
           ) : (
             <code className="font-mono text-[14px] text-white/90">- {item.syntax}</code>
@@ -186,6 +185,7 @@ function TagDetail({ item }: { item: MetaTag }) {
       <Field label="Syntax">
         <div className="bg-[#121314] border border-white/[0.05] rounded-lg px-4 py-3">
           {highlightedSyntax ? (
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Highlighter
             <div className='overflow-auto [&::-webkit-scrollbar]:h-[3px]' dangerouslySetInnerHTML={{ __html: highlightedSyntax }} />
           ) : (
             <code className="font-mono text-[14px] text-white/90">{item.rawname}</code>
@@ -219,8 +219,8 @@ function ObjectDetail({ item }: { item: MetaObject }) {
       </Field>
       <Field label="Format">
         <div className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg px-4 py-3 space-y-1">
-          {asLines(item.format).map((line, i) => (
-            <p key={i} className="text-[13px] text-white/70 font-mono leading-relaxed">{line}</p>
+          {asLines(item.format).map((line) => (
+            <p key={line} className="text-[13px] text-white/70 font-mono leading-relaxed">{line}</p>
           ))}
         </div>
       </Field>
@@ -271,8 +271,8 @@ function EventDetail({ item }: { item: MetaEvent }) {
       {eventLines.length > 0 && (
         <Field label="Event syntax">
           <div className="space-y-1.5">
-            {eventLines.map((e, i) => (
-              <div key={i} className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg px-4 py-2.5">
+            {eventLines.map((e) => (
+              <div key={e} className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg px-4 py-2.5">
                 <code className="font-mono text-[14px] text-white/90">{e}</code>
               </div>
             ))}
@@ -284,10 +284,10 @@ function EventDetail({ item }: { item: MetaEvent }) {
       {contextLines.length > 0 && (
         <Field label="Context">
           <div className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg p-4 space-y-2">
-            {contextLines.map((c, i) => {
+            {contextLines.map((c) => {
               const [tag, ...rest] = c.split(' - ');
               return (
-                <div key={i} className="flex flex-col gap-1 text-[13px]">
+                <div key={c} className="flex flex-col gap-1 text-[13px]">
                   <code className="font-mono text-white/80">{tag.trim()} <span className='text-gray-500'>- {rest}</span></code>
                 </div>
               );
@@ -308,8 +308,8 @@ function WarningBlock({ value }: { value: string | string[] | undefined }) {
       <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
       <div className="space-y-1">
         <p className="text-sm font-bold text-orange-500 uppercase tracking-wider mb-1.5">Warning</p>
-        {lines.map((line, i) => (
-          <p key={i} className="text-[14px] text-orange-200/90 leading-relaxed">
+        {lines.map((line) => (
+          <p key={line} className="text-[14px] text-orange-200/90 leading-relaxed">
             {line}
           </p>
         ))}
@@ -326,7 +326,7 @@ function renderDetail(item: MetaItem) {
     case 'formatter': return <FormatterDetail item={item as MetaFormatter} />;
     case 'mechanism': return <MechanismDetail item={item as MetaMechanism} />;
     case 'event': return <EventDetail item={item as MetaEvent} />;
-    default: return <Description value={(item as any).description} />;
+    default: return <Description value={(item as MetaDefault).description} />;
   }
 }
 
@@ -350,7 +350,7 @@ interface MetaDetailProps {
 export function MetaDetail({ item, selectedAddon }: MetaDetailProps) {
   const safeId = `meta-${item.type}-${item.name.replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
-  const warningValue = 'warning' in item ? (item as any).warning : undefined;
+  const warningValue = 'warning' in item ? (item as MetaDefault).warning : undefined;
 
   return (
     <article id={safeId} className="scroll-mt-[110px]">
@@ -396,7 +396,7 @@ export function MetaDetail({ item, selectedAddon }: MetaDetailProps) {
           </a>
           {item.implements && (
             <a
-              href={"https://meta.denizenscript.com/Docs/" + corexToDenizenType(item.type) + "/" + encodeURI(item.implements)}
+              href={`https://meta.denizenscript.com/Docs/${corexToDenizenType(item.type)}/${encodeURI(item.implements)}`}
               className="group inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-all duration-300"
               rel="noopener noreferrer"
               target="_blank"

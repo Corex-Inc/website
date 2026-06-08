@@ -1,9 +1,10 @@
-import Modal from './Modal';
-import { useEffect, useRef, useState } from 'react';
+/** biome-ignore-all lint/suspicious/noExplicitAny:- */
+import { AlertTriangle, Check, Copy, ExternalLink, RefreshCw } from 'lucide-react';
 import nprogress from 'nprogress';
-import { useAuth } from '../../contexts/AuthContext';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Modal from '@/shared/components/Modal';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 import { authService } from '../../lib/authService';
-import { Copy, Check, ExternalLink, RefreshCw, AlertTriangle } from 'lucide-react';
 import { DiscordLoginButton } from '../auth/DiscordLoginButton';
 import { MinecraftLoginButton } from '../auth/MinecraftLoginButton';
 import { CorexLoader } from './loading/corex';
@@ -28,7 +29,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [flowError, setFlowError] = useState<string | null>(null);
   const pollIntervalRef = useRef<any>(null);
 
-  const { login } = useAuth();
+  const login = useAuthStore((state) => state.login);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -51,6 +52,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     return () => window.removeEventListener('message', handleMessage);
   }, [onClose]);
 
+  const stopPolling = useCallback(() => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     if (!isOpen) {
       stopPolling();
@@ -60,14 +68,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setIsProcessing(false);
     }
     return () => stopPolling();
-  }, [isOpen]);
+  }, [isOpen, stopPolling]);
 
-  const stopPolling = () => {
-    if (pollIntervalRef.current) {
-      clearInterval(pollIntervalRef.current);
-      pollIntervalRef.current = null;
-    }
-  };
 
   const startPolling = (data: DeviceFlowData) => {
     stopPolling();
@@ -183,6 +185,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     </span>
                     <button 
                       onClick={handleCopyCode}
+                      type="button"
                       className="p-2 hover:bg-white/10 rounded-lg transition-colors text-surface-400 hover:text-white"
                       title="Copy code"
                     >
@@ -207,6 +210,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={() => {
                   stopPolling();
                   setDeviceFlow(null);
@@ -219,6 +223,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {flowError && (
                 <button
                   onClick={handleMinecraftDeviceFlow}
+                  type="button"
                   className="flex-1 py-3 text-sm font-semibold rounded-full bg-emerald-500 text-surface-950 hover:bg-emerald-400 transition-colors"
                 >
                   Retrieve New Code
@@ -262,7 +267,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               )}
             </div>
 
-            <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors text-sm font-medium uppercase tracking-widest mt-4">
+            <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors text-sm font-medium uppercase tracking-widest mt-4" type="button">
               Back
             </button>
           </div>

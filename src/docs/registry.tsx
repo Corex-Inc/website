@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
 import { pagesConfigs } from 'virtual:docs-registry';
+import React, { type ReactNode } from 'react';
 
 export interface TocItem {
   id: string;
@@ -11,6 +11,7 @@ export interface DocPage {
   path: string;
   title: string;
   emoji?: string;
+  // biome-ignore lint/suspicious/noExplicitAny:-
   component: React.LazyExoticComponent<React.ComponentType<any>>;
   priority: number;
   category: string;
@@ -32,6 +33,7 @@ class DocsRegistry {
   private categoriesMeta: Record<string, CategoryMeta> = {};
 
   constructor() {
+    // biome-ignore lint/suspicious/noExplicitAny:-
     Object.entries(metaModules).forEach(([filePath, mod]: [string, any]) => {
       const folderName = filePath.split('/')[2];
       const meta = mod.default;
@@ -39,6 +41,7 @@ class DocsRegistry {
     });
 
     this.pages = pagesConfigs
+      // biome-ignore lint/suspicious/noExplicitAny:-
       .map((entry: any) => {
         const lazyFactory = lazyModules[entry.moduleId];
         if (!lazyFactory) {
@@ -50,6 +53,7 @@ class DocsRegistry {
         const categoryData = this.categoriesMeta[folderName];
 
         const LazyComponent = React.lazy(
+          // biome-ignore lint/suspicious/noExplicitAny:-
           lazyFactory as () => Promise<{ default: React.ComponentType<any> }>
         );
 
@@ -59,6 +63,7 @@ class DocsRegistry {
           component: LazyComponent,
         };
       })
+      // biome-ignore lint/suspicious/noExplicitAny:-
       .filter((page: any): page is DocPage => page !== null)
       .sort((a: DocPage, b: DocPage) => a.priority - b.priority);
   }

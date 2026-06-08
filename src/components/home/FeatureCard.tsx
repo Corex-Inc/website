@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useInView } from '../../hooks/useInView';
+import { useRef, useState } from 'react';
+import { useInView } from '@/shared/hooks/useInView';
 
 interface FeatureCardProps {
   icon: LucideIcon;
@@ -33,8 +33,9 @@ export function FeatureCard({ icon: Icon, title, description, delay }: FeatureCa
         ease: [0.21, 0.47, 0.32, 0.98]
       }}
     >
-      <div
+      <section
         ref={divRef}
+        role="region"
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -62,7 +63,7 @@ export function FeatureCard({ icon: Icon, title, description, delay }: FeatureCa
             background: `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.03) 100%)`,
           }}
         />
-      </div>
+      </section>
     </motion.div>
   );
 }

@@ -1,5 +1,5 @@
+import { Check, ChevronDown, Filter, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { Search, X, ChevronDown, Check, Filter } from 'lucide-react';
 import type { MetaFilter, MetaItem } from './types.ts';
 
 const FILTER_OPTIONS: { label: string; value: MetaFilter }[] = [
@@ -81,6 +81,7 @@ export function MetaSidebar({
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
+              type="button"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
             >
               <X className="w-4 h-4" />
@@ -93,6 +94,7 @@ export function MetaSidebar({
         <div className="relative">
           <button
             onClick={() => setAddonOpen((v) => !v)}
+            type="button"
             className="w-full flex items-center justify-between bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] rounded-xl px-3 py-2 text-sm text-white/80 transition-colors"
           >
             <div className="flex items-center gap-2">
@@ -107,6 +109,7 @@ export function MetaSidebar({
               <div className="overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
                 <button
                   onClick={() => { onAddonChange('Corex'); setAddonOpen(false); }}
+                  type="button"
                   className={`w-full text-left px-3 py-2.5 text-sm rounded-xl transition-colors ${selectedAddon === 'Corex' ? 'text-white bg-white/10 font-medium' : 'text-white/60 hover:bg-white/[0.04]'}`}
                 >
                   Corex
@@ -115,6 +118,7 @@ export function MetaSidebar({
                   <button
                     key={a}
                     onClick={() => { onAddonChange(a); setAddonOpen(false); }}
+                    type="button"
                     className={`w-full text-left px-3 py-2.5 text-sm rounded-xl transition-colors ${selectedAddon === a ? 'text-white bg-white/10 font-medium' : 'text-white/60 hover:bg-white/[0.04]'}`}
                   >
                     {a}
@@ -131,6 +135,7 @@ export function MetaSidebar({
           <button
             key={f.value}
             onClick={() => onFilterChange(activeFilter === f.value ? null : f.value)}
+            type="button"
             className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/70 hover:text-white hover:bg-white/[0.03] rounded-lg transition-colors group"
           >
             <div className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-all duration-200 ${
@@ -153,6 +158,7 @@ export function MetaSidebar({
           <div className="relative">
             <button
               onClick={() => setObjectOpen((v) => !v)}
+              type="button"
               className={`w-full flex items-center justify-between border rounded-xl px-3 py-2 text-sm transition-colors ${
                 objectFilter 
                   ? 'bg-white/10 border-white/30 text-white hover:bg-white/20' 
@@ -170,6 +176,7 @@ export function MetaSidebar({
                 <div className="overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-thumb]:rounded-full">
                   <button
                     onClick={() => { onObjectFilterChange(null); setObjectOpen(false); }}
+                    type="button"
                     className={`w-full text-left px-3 py-2.5 text-sm rounded-xl transition-colors ${
                       !objectFilter 
                         ? 'text-white bg-white/[0.06] font-medium' 
@@ -182,6 +189,7 @@ export function MetaSidebar({
                     <button
                       key={obj}
                       onClick={() => { onObjectFilterChange(obj); setObjectOpen(false); }}
+                      type="button"
                       className={`w-full text-left px-3 py-2.5 text-sm rounded-xl transition-colors ${
                         objectFilter === obj 
                           ? 'text-white bg-white/10 font-medium' 
@@ -206,6 +214,7 @@ export function MetaSidebar({
         {loading ? (
           <div className="flex flex-col gap-1 px-3">
             {Array.from({ length: 8 }).map((_, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: doesn't matter
               <div key={i} className="h-9 rounded-xl bg-white/[0.03] animate-pulse" style={{ animationDelay: `${i * 40}ms` }} />
             ))}
           </div>
@@ -213,12 +222,13 @@ export function MetaSidebar({
           <p className="px-4 py-8 text-center text-sm text-white/25">No results</p>
         ) : (
           <div className="px-2 pb-4 flex flex-col gap-0.5">
-            {items.map((item, index) => {
+            {items.map((item) => {
               const isSelected = activeItemName === `${item.type}-${item.name}`;
               return (
                 <button
-                  key={`${item.type}-${item.name}-${index}`}
+                  key={`${item.type}-${item.name}`}
                   onClick={() => onSelectItem(item)}
+                  type="button"
                   className={`
                     w-full text-left flex items-center gap-2 px-3 py-2 text-sm transition-all duration-150 rounded-xl group
                     ${isSelected

@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
-import { Hero } from '../components/home/Hero';
-import { Header } from '../components/shared/Header';
-import { Footer } from '../components/shared/Footer';
 import { CorexLoader } from '@/components/shared/loading/corex';
+import { Footer } from '@/widgets/Footer';
+import { Header } from '@/widgets/Header';
+import { Hero } from '../components/home/Hero';
 
 const Features = lazy(() => import( '../components/home/Features'));
 const Platforms = lazy(() => import('../components/home/Platforms'));

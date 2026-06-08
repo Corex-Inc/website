@@ -1,16 +1,18 @@
-import { BrowserRouter, Routes, Route, useLocation,  } from 'react-router-dom';
-import { useEffect } from 'react';
-import { HomePage } from './pages/Home';
-import Docs from './pages/Documentation';
-import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
-import { AuthProvider } from './contexts/AuthContext';
+import nprogress from 'nprogress';
+import { useEffect } from 'react';
+import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
+import { MainLayout } from './layouts/MainLayout';
 import { AuthCallback } from './pages/AuthCallback';
-import { SettingsPage } from './pages/Settings';
+import Docs from './pages/Documentation';
 import DocumentsLayout from './pages/documents/DocumentsLayout';
-import TermsOfService from './pages/documents/TermsOfService';
 import PrivacyPolicy from './pages/documents/PrivacyPolicy';
+import TermsOfService from './pages/documents/TermsOfService';
+import { HomePage } from './pages/Home';
 import { MetaPage } from './pages/meta/MetaPage';
+import { SettingsPage } from './pages/Settings';
+import { AuthInitializer } from './shared/stores/auth/AuthInitializer';
+import { useAuthStore } from './shared/stores/useAuthStore';
 
 nprogress.configure({ 
   showSpinner: false, 
@@ -18,12 +20,15 @@ nprogress.configure({
   minimum: 0.2
 });
 
-function PageLoader() {
+function AppRoot() {
   const location = useLocation();
-  const isLoading = false;
+  const isLoading = useAuthStore((state) => state.isLoading);
 
   useEffect(() => {
+    const _currentPath = location.pathname;
+
     nprogress.start();
+
     if (!isLoading) {
       nprogress.done();
     }
@@ -31,33 +36,72 @@ function PageLoader() {
     return () => {
       nprogress.done();
     };
-  }, [location, isLoading]);
+  }, [location.pathname, isLoading]);
 
-  return null;
+  return <Outlet />;
 }
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AppRoot />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "meta",
+        element: <MetaPage />,
+      },
+      {
+        path: "documentation/*",
+        element: <Docs />,
+      },
+      {
+        path: "login/:provider",
+        element: <AuthCallback />,
+      },
+      {
+        path: "link/:provider",
+        element: <AuthCallback />,
+      },
+      {
+        element: <MainLayout />,
+        children: [
+          {
+            path: "settings",
+            element: <SettingsPage />,
+          }
+        ]
+      },
+      {
+        path: "documents",
+        element: <DocumentsLayout />,
+        children: [
+          {
+            index: true,
+            element: <TermsOfService />,
+          },
+          {
+            path: "terms",
+            element: <TermsOfService />,
+          },
+          {
+            path: "privacy",
+            element: <PrivacyPolicy />,
+          }
+        ]
+      }
+    ]
+  }
+])
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <PageLoader />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/meta" element={<MetaPage />} />
-          <Route path="/documentation/*" element={<Docs />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          
-          <Route path="/login/:provider" element={<AuthCallback />} />
-          <Route path="/link/:provider" element={<AuthCallback />} />
-
-          <Route path="/documents" element={<DocumentsLayout />}>
-            <Route index element={<TermsOfService />} />
-            <Route path="terms" element={<TermsOfService />} />
-            <Route path="privacy" element={<PrivacyPolicy />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <AuthInitializer>
+      <RouterProvider router={router} />
+    </AuthInitializer>
   );
 }
 

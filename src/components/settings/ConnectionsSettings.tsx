@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { Copy, Check, RefreshCw, AlertTriangle } from 'lucide-react';
-import { authService } from '@/lib/authService';
+/** biome-ignore-all lint/suspicious/noExplicitAny:- */
+import { AlertTriangle, Check, Copy, RefreshCw } from 'lucide-react';
 import nprogress from 'nprogress';
-import Link from '../shared/Link';
-import Button from '../shared/Button';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { authService } from '@/lib/authService';
+import Button from '@/shared/components/Button';
+import Link from '@/shared/components/Link';
 
 const CLIENT_ID = '1510655714056605706';
 
@@ -27,12 +28,12 @@ export default function ConnectionsSettings({ settings, onRefresh }: Connections
   const [copied, setCopied] = useState(false);
   const pollIntervalRef = useRef<any>(null);
 
-  const stopMinecraftPoll = () => {
+  const stopMinecraftPoll = useCallback(() => {
     if (pollIntervalRef.current) {
       clearInterval(pollIntervalRef.current);
       pollIntervalRef.current = null;
     }
-  };
+  }, []);
 
   const startMinecraftLinkPoll = (data: DeviceFlowData) => {
     stopMinecraftPoll();
@@ -90,8 +91,9 @@ export default function ConnectionsSettings({ settings, onRefresh }: Connections
       } else {
         throw new Error(data.message || 'Failed to initiate Microsoft device link.');
       }
-    } catch (err: any) {
-      setMinecraftLinkError(err.response?.data?.message || err.message || 'Error occurred starting Minecraft link.');
+    } catch (err) {
+      if (!(err instanceof Error)) return;
+      setMinecraftLinkError(err.message || 'Error occurred starting Minecraft link.');
     } finally {
       setMinecraftLinking(false);
       nprogress.done();
@@ -111,7 +113,7 @@ export default function ConnectionsSettings({ settings, onRefresh }: Connections
     setTimeout(() => setCopied(false), 2000);
   };
 
-  useEffect(() => () => stopMinecraftPoll(), []);
+  useEffect(() => () => stopMinecraftPoll(), [stopMinecraftPoll]);
 
   return (
     <div className="space-y-5">
@@ -206,6 +208,7 @@ export default function ConnectionsSettings({ settings, onRefresh }: Connections
                     <p className="mb-2">Enter this code:</p>
                     <button
                       onClick={handleCopyCode}
+                      type="button"
                       className="flex items-center gap-2 px-3 py-2 bg-surface-950 hover:bg-black border border-white/10 rounded-lg font-mono font-bold text-white tracking-widest transition-colors text-sm"
                     >
                       {minecraftDeviceFlow.user_code}
@@ -238,6 +241,7 @@ export default function ConnectionsSettings({ settings, onRefresh }: Connections
                 {minecraftLinkError && (
                   <button
                     onClick={handleLinkMinecraft}
+                    type="button"
                     className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold rounded-lg transition-colors"
                   >
                     Try Again

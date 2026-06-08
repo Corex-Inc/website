@@ -1,12 +1,17 @@
-import { useEffect, useState, useRef } from 'react';
-import { LogIn, LogOut, ChevronDown, User } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import LoginModal from './LoginModal';
-import Button from './Button';
+import { ChevronDown, LogIn, LogOut, User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import LoginModal from '@/components/shared/LoginModal';
+import Button from '@/shared/components/Button';
+import { useAuthStore } from '@/shared/stores/useAuthStore';
 
 export function Header() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const isAuthenticated = useAuthStore(
+    (state) => state.isAuthenticated
+  );
+
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -97,6 +102,7 @@ export function Header() {
               <div className="relative">
                 <button
                   ref={avatarRef}
+                  type="button"
                   onClick={() => setOpen(!open)}
                   className="group flex items-center gap-3 focus:outline-none"
                 >
@@ -104,7 +110,7 @@ export function Header() {
                     <div className="flex items-center gap-1.5">
                       <div className='flex flex-col items-end'>
                        <span className={`font-medium text-white transition-all duration-500 flex gap-1 ${scrolled ? 'text-sm' : 'text-base'}`}>
-                         {user.name}
+                         {user.name || user.username}
                        </span>
                        <span className={`font-medium text-gray-400 transition-all duration-500 gap-1 ${scrolled ? 'text-[10px]' : 'text-xs'}`}>
                          @{user.username}
@@ -135,6 +141,7 @@ export function Header() {
                   <div className="p-2">
                     <Link 
                       to="/settings"
+                      onClick={() => setOpen(false)}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-white-400 hover:bg-white/5 transition-colors"
                     >
                       <User className="w-4 h-4" />
@@ -142,6 +149,7 @@ export function Header() {
                     </Link>
 
                     <button
+                      type="button"
                       onClick={() => {
                         logout();
                         setOpen(false);

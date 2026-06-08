@@ -1,7 +1,7 @@
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 interface ModalProps {
@@ -35,6 +35,7 @@ export default function Modal({ isOpen, onClose, children, title }: ModalProps) 
             >
               <button
                 onClick={onClose}
+                type="button"
                 className="absolute top-6 right-6 text-white/60 hover:text-white transition-colors"
               >
                 <X size={24} />
