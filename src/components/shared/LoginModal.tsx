@@ -4,7 +4,7 @@ import nprogress from 'nprogress';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Modal from '@/shared/components/Modal';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
-import { authService } from '../../lib/authService';
+import { authService } from '@/shared/services/authService';
 import { DiscordLoginButton } from '../auth/DiscordLoginButton';
 import { MinecraftLoginButton } from '../auth/MinecraftLoginButton';
 import { CorexLoader } from './loading/corex';

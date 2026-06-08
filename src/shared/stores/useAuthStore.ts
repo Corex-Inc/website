@@ -1,5 +1,6 @@
 import { create } from "zustand"
-import { authService, type UserProfile } from "@/shared/lib/authService"
+import { authService } from "@/shared/services/authService"
+import type { UserProfile } from "../types/auth.types";
 
 interface AuthState {
   user: UserProfile | null;

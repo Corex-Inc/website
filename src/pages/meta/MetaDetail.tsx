@@ -1,6 +1,8 @@
+/** biome-ignore-all lint/suspicious/noArrayIndexKey:- */
+/** biome-ignore-all lint/security/noDangerouslySetInnerHtml:- */
 import { AlertTriangle, ArrowUpRight, Ban, Clock } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { highlightCode } from '@/lib/highlighter';
+import { highlightCode } from '@/shared/lib/highlighter.ts';
 import type { MetaCommand, MetaDefault, MetaEvent, MetaFormatter, MetaItem, MetaMechanism, MetaObject, MetaTag } from './types.ts';
 
 function asLines(val: string | string[] | undefined): string[] {
@@ -24,8 +26,8 @@ function Description({ value }: { value: string | string[] | undefined }) {
   return (
     <Field label="Description">
       <div className="space-y-1.5">
-        {lines.map((line) => (
-          <p key={line} className="text-[15px] text-white/80 leading-relaxed">{line}</p>
+        {lines.map((line, index) => (
+          <p key={`${index}-${line}`} className="text-[15px] text-white/80 leading-relaxed">{line}</p>
         ))}
       </div>
     </Field>
@@ -66,11 +68,10 @@ function UsageBlock({ value }: { value: string | string[] | undefined }) {
   return (
     <Field label="Snippet">
       <div className="space-y-2 bg-[#121314] border border-white/[0.05] rounded-lg p-4 overflow-auto [&::-webkit-scrollbar]:h-[6px]">
-        {highlightedHtml.map((html) => (
-          <div key={html} className="font-mono text-[13px] py-2 text-white/80 whitespace-pre-wrap break-words">
+        {highlightedHtml.map((html, index) => (
+          <div key={index} className="font-mono text-[13px] py-2 text-white/80 whitespace-pre-wrap break-words">
             <pre
               className="m-0 bg-transparent p-0"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: Highlighter
               dangerouslySetInnerHTML={{ __html: html }}
             />
           </div>
@@ -144,7 +145,6 @@ function CommandDetail({ item }: { item: MetaCommand }) {
       <Field label="Syntax">
         <div className="bg-[#121314] border border-white/[0.05] rounded-lg px-4 py-3">
           {highlightedSyntax ? (
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: Highlighter
             <div className='overflow-auto [&::-webkit-scrollbar]:h-[3px]' dangerouslySetInnerHTML={{ __html: highlightedSyntax }} />
           ) : (
             <code className="font-mono text-[14px] text-white/90">- {item.syntax}</code>
@@ -185,7 +185,6 @@ function TagDetail({ item }: { item: MetaTag }) {
       <Field label="Syntax">
         <div className="bg-[#121314] border border-white/[0.05] rounded-lg px-4 py-3">
           {highlightedSyntax ? (
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: Highlighter
             <div className='overflow-auto [&::-webkit-scrollbar]:h-[3px]' dangerouslySetInnerHTML={{ __html: highlightedSyntax }} />
           ) : (
             <code className="font-mono text-[14px] text-white/90">{item.rawname}</code>
@@ -219,8 +218,8 @@ function ObjectDetail({ item }: { item: MetaObject }) {
       </Field>
       <Field label="Format">
         <div className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg px-4 py-3 space-y-1">
-          {asLines(item.format).map((line) => (
-            <p key={line} className="text-[13px] text-white/70 font-mono leading-relaxed">{line}</p>
+          {asLines(item.format).map((line, index) => (
+            <p key={`${index}-${line}`} className="text-[13px] text-white/70 font-mono leading-relaxed">{line}</p>
           ))}
         </div>
       </Field>
@@ -271,8 +270,8 @@ function EventDetail({ item }: { item: MetaEvent }) {
       {eventLines.length > 0 && (
         <Field label="Event syntax">
           <div className="space-y-1.5">
-            {eventLines.map((e) => (
-              <div key={e} className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg px-4 py-2.5">
+            {eventLines.map((e, index) => (
+              <div key={`${index}-${e}`} className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg px-4 py-2.5">
                 <code className="font-mono text-[14px] text-white/90">{e}</code>
               </div>
             ))}
@@ -284,11 +283,11 @@ function EventDetail({ item }: { item: MetaEvent }) {
       {contextLines.length > 0 && (
         <Field label="Context">
           <div className="bg-[#0a0a0a] border border-white/[0.05] rounded-lg p-4 space-y-2">
-            {contextLines.map((c) => {
+            {contextLines.map((c, index) => {
               const [tag, ...rest] = c.split(' - ');
               return (
-                <div key={c} className="flex flex-col gap-1 text-[13px]">
-                  <code className="font-mono text-white/80">{tag.trim()} <span className='text-gray-500'>- {rest}</span></code>
+                <div key={`${index}-${c}`} className="flex flex-col gap-1 text-[13px]">
+                  <code className="font-mono text-white/80">{tag.trim()} <span className='text-gray-500'>- {rest.join(' - ')}</span></code>
                 </div>
               );
             })}
@@ -308,8 +307,8 @@ function WarningBlock({ value }: { value: string | string[] | undefined }) {
       <AlertTriangle className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
       <div className="space-y-1">
         <p className="text-sm font-bold text-orange-500 uppercase tracking-wider mb-1.5">Warning</p>
-        {lines.map((line) => (
-          <p key={line} className="text-[14px] text-orange-200/90 leading-relaxed">
+        {lines.map((line, index) => (
+          <p key={`${index}-${line}`} className="text-[14px] text-orange-200/90 leading-relaxed">
             {line}
           </p>
         ))}

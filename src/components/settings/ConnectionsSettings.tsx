@@ -2,9 +2,9 @@
 import { AlertTriangle, Check, Copy, RefreshCw } from 'lucide-react';
 import nprogress from 'nprogress';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { authService } from '@/lib/authService';
 import Button from '@/shared/components/Button';
 import Link from '@/shared/components/Link';
+import { authService } from '@/shared/services/authService';
 
 const CLIENT_ID = '1510655714056605706';
 

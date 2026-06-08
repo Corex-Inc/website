@@ -1,24 +1,21 @@
 import type { ReactNode } from "react"
 import { Outlet } from "react-router-dom";
-import { Footer } from "@/widgets/Footer";
 import { Header } from "@/widgets/Header"
 
-interface MainLayoutProps {
+interface HeaderLayoutProps {
   children?: ReactNode;
 }
 
-function MainLayout({ children }: MainLayoutProps) {
+function HeaderLayout({ children }: HeaderLayoutProps) {
   return (
-    <div className="app-layout">
+    <div className="header-layout">
       <Header />
 
       <main>
         {children || <Outlet />}
       </main>
-
-      <Footer />
     </div>
   )
 }
 
-export { MainLayout };
+export { HeaderLayout };

@@ -1,5 +1,5 @@
 import { ArrowDown } from 'lucide-react';
-import { HERO_BUTTONS } from '../../data/constants';
+import { HERO_BUTTONS } from '@/shared/constants/constants';
 
 export function Hero() {
   return (

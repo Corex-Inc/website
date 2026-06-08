@@ -1,48 +1,11 @@
-import { apiClient } from './api';
+import { STORAGE_KEYS } from "../constants/auth.constants";
 
-export interface UserProfile {
-  id: string;
-  username: string;
-  name?: string;
-  email: string;
-  joinedAt: string;
-  has_licence?: boolean;
-  discordId?: string;
-  avatar?: string;
-  gameAccounts?: Array<{ id: string; name: string }>;
-  username_cooldown?: {
-    changeable: boolean;
-    available_at: string | null;
-    remaining_ms: number;
-  };
-  connections?: {
-    discord?: { id: string; username: string; email?: string; avatar?: string };
-    minecraft?: { uuid?: string; username: string };
-  };
-  data?: {
-    likes?: number;
-    posts?: number;
-    [key: string]: any;
-  };
-  createdAt?: string;
-}
+import { apiClient } from "../lib/api";
+import type { AuthResponse, UserProfile } from "../types/auth.types";
 
-interface AuthResponse {
-  success: boolean;
-  profile: UserProfile;
-  refreshToken: string;
-  accessToken: string;
-  message: string;
-}
+class AuthService {
 
-const STORAGE_KEYS = {
-  ACCESS_TOKEN: 'accessToken',
-  REFRESH_TOKEN: 'refreshToken',
-  USER_PROFILE: 'userProfile',
-} as const;
-
-export const authService = {
-  loginDiscord: async (code: string, redirectUri?: string): Promise<AuthResponse> => {
+  async loginDiscord(code: string, redirectUri?: string): Promise<AuthResponse> {
     const response = await apiClient.post('/api/v1/login/discord', {
       code,
       redirect_uri: redirectUri,
@@ -54,19 +17,19 @@ export const authService = {
     }
 
     return authData;
-  },
+  }
 
-  getMinecraftDeviceCode: async () => {
+  async getMinecraftDeviceCode() {
     const response = await apiClient.post('/api/v1/login/minecraft/device');
     return response.data;
-  },
+  }
 
-  pollMinecraftDeviceStatus: async (deviceCode: string) => {
+  async pollMinecraftDeviceStatus(deviceCode: string) {
     const response = await apiClient.post('/api/v1/login/minecraft/device/poll', { deviceCode });
     return response.data;
-  },
+  }
 
-  loginMinecraft: async (code: string): Promise<AuthResponse> => {
+  async loginMinecraft(code: string): Promise<AuthResponse> {
     const response = await apiClient.post(`/api/v1/login/minecraft?code=${code}`);
     const authData = response.data as AuthResponse;
 
@@ -75,9 +38,9 @@ export const authService = {
     }
 
     return authData;
-  },
+  }
 
-  getProfile: async (): Promise<UserProfile | null> => {
+  async getProfile(): Promise<UserProfile | null> {
     try {
       const response = await apiClient.get('/api/v1/profile');
       const data = response.data as AuthResponse;
@@ -85,70 +48,72 @@ export const authService = {
     } catch {
       return null;
     }
-  },
+  }
 
-  getSettings: async () => {
+  async getSettings() {
     const response = await apiClient.get('/api/v1/settings');
     return response.data;
-  },
+  }
 
-  updateName: async (name: string) => {
+  async updateName(name: string) {
     const response = await apiClient.patch('/api/v1/settings/name', { name });
     return response.data;
-  },
+  }
 
-  updateUsername: async (username: string) => {
+  async updateUsername(username: string) {
     const response = await apiClient.patch('/api/v1/settings/username', { username });
     return response.data;
-  },
+  }
 
-  linkDiscord: async (code: string, redirectUri?: string) => {
+  async linkDiscord(code: string, redirectUri?: string) {
     const response = await apiClient.post('/api/v1/settings/link/discord', {
       code,
       redirect_uri: redirectUri,
     });
     return response.data;
-  },
+  }
 
-  linkMinecraftDevice: async (deviceCode: string) => {
+  async linkMinecraftDevice(deviceCode: string) {
     const response = await apiClient.post('/api/v1/settings/link/minecraft', { deviceCode });
     return response.data;
-  },
+  }
 
-  linkMinecraft: async (code: string) => {
+  async linkMinecraft(code: string) {
     const response = await apiClient.post('/api/v1/settings/link/minecraft', { code });
     return response.data;
-  },
+  }
 
-  persistAuth: (authData: AuthResponse & { accessToken?: string; refreshToken?: string }) => {
+  persistAuth(authData: AuthResponse & { accessToken?: string; refreshToken?: string }) {
     if (authData.profile) {
       localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(authData.profile));
     }
     if ('accessToken' in authData) {
-      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, authData.accessToken!);
+      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, authData.accessToken);
     }
     if ('refreshToken' in authData) {
-      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, authData.refreshToken!);
+      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, authData.refreshToken);
     }
-  },
+  }
 
-  restoreSession: (): UserProfile | null => {
+  restoreSession(): UserProfile | null {
     try {
       const storedProfile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       return storedProfile ? JSON.parse(storedProfile) : null;
     } catch {
       return null;
     }
-  },
+  }
 
-  isSessionValid: (): boolean => {
+  isSessionValid(): boolean {
     return !!localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-  },
+  }
 
-  logout: () => {
+  logout() {
     localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
     window.location.href = '/';
   }
-};
+}
+
+export const authService = new AuthService();

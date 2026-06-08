@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { CorexLoader } from '@/components/shared/loading/corex';
 import Button from '@/shared/components/Button';
+import { authService } from '@/shared/services/authService';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
-import { authService } from '../lib/authService';
 
 export function AuthCallback() {
   const [searchParams] = useSearchParams();

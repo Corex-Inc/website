@@ -2,8 +2,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { FileText, Shield, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Footer } from '@/widgets/Footer';
-import { Header } from '@/widgets/Header';
 
 const SECTIONS = [
   { path: 'terms', title: 'Terms of Service', icon: FileText },
@@ -34,8 +32,6 @@ export default function DocumentsLayout() {
   }, []);
 
   return (
-    <>
-      <Header />
       <div className="min-h-screen bg-surface-950 text-white flex flex-col font-sans pt-32 pb-12">
         <div className="flex-1 flex max-w-[1600px] w-full mx-auto relative px-4 lg:px-8">
 
@@ -125,7 +121,5 @@ export default function DocumentsLayout() {
           )}
         </AnimatePresence>
       </div>
-      <Footer />
-    </>
   );
 }

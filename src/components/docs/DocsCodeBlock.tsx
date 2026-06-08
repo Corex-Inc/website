@@ -1,6 +1,6 @@
 import { Check, ChevronDown, Copy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { highlightCode } from '@/lib/highlighter';
+import { highlightCode } from '@/shared/lib/highlighter';
 
 interface DocsCodeBlockProps {
   lang?: string;

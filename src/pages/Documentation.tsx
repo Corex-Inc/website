@@ -3,8 +3,6 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CorexLoader } from '@/components/shared/loading/corex';
-import { Footer } from '@/widgets/Footer';
-import { Header } from '@/widgets/Header';
 import { docsModule } from '../docs';
 import type { DocPage } from '../docs/registry';
 
@@ -185,8 +183,6 @@ export default function Docs() {
   const nextPage = currentIndex < visualOrder.length - 1 ? visualOrder[currentIndex + 1] : null;
 
   return (
-    <>
-    <Header />
     <div className="min-h-screen bg-surface-950 text-white flex flex-col font-sans pt-32 pb-12">
       <div className="flex-1 flex max-w-[1600px] w-full mx-auto relative px-4 lg:px-8">
         
@@ -316,7 +312,5 @@ export default function Docs() {
         )}
       </AnimatePresence>
     </div>
-    <Footer />
-    </>
   );
 }

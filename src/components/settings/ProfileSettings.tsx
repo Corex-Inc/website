@@ -1,6 +1,6 @@
 import { AlertTriangle, Check } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { apiClient } from '@/lib/api';
+import { apiClient } from '@/shared/lib/api';
 
 interface ProfileSettingsProps {
   avatar?: string;

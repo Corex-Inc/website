@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { CODE_EXAMPLES } from '../../data/constants';
-import { highlightCode } from '../../lib/highlighter';
+import { CODE_EXAMPLES } from '@/shared/constants/constants';
+import { highlightCode } from '@/shared/lib/highlighter';
 
 function HighlightedCode({ code }: { code: string }) {
   const [html, setHtml] = useState<string>('');

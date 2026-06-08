@@ -1,4 +1,4 @@
-import { FEATURES } from '../../data/constants';
+import { FEATURES } from '@/shared/constants/constants';
 import { FeatureCard } from './FeatureCard';
 
 export default function Features() {

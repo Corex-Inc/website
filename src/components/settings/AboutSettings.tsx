@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { apiClient } from '@/lib/api';
+import { apiClient } from '@/shared/lib/api';
 
 interface AboutSettingsProps {
   about?: string;

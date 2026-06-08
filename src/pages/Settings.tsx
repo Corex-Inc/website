@@ -3,10 +3,8 @@ import { AlertTriangle, Check, Link2, type LucideIcon, User } from 'lucide-react
 import nprogress from 'nprogress';
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { CorexLoader } from '@/components/shared/loading/corex';
+import { authService } from '@/shared/services/authService';
 import { useAuthStore } from '@/shared/stores/useAuthStore';
-import { Footer } from '@/widgets/Footer';
-import { Header } from '@/widgets/Header';
-import { authService } from '../lib/authService';
 
 const ProfileSettings = lazy(() => import( '../components/settings/ProfileSettings'));
 const AboutSettings = lazy(() => import( '../components/settings/AboutSettings'));
@@ -155,7 +153,6 @@ export function SettingsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-surface-950 text-white flex flex-col">
-        <Header />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-surface-400">Please log in to view settings.</p>
         </div>
@@ -164,179 +161,175 @@ export function SettingsPage() {
   }
 
   return (
-    <>
-      <Header />
-      <div style={{ overflow: 'hidden' }} className='py-8'>
-        <div
-          className={`min-h-screen bg-surface-950 text-white relative${shaking ? ' settings-shake' : ''}`}
-        >
-          <main className="pt-24 pb-36 px-4 md:px-8 max-w-6xl mx-auto min-h-[calc(100vh-200px)]">
-            <div className="mb-6 md:mb-8 flex items-center justify-between">
-              <h1 className="text-xl md:text-2xl font-bold text-white">Settings</h1>
+    <div style={{ overflow: 'hidden' }} className='py-8'>
+      <div
+        className={`min-h-screen bg-surface-950 text-white relative${shaking ? ' settings-shake' : ''}`}
+      >
+        <main className="pt-24 pb-36 px-4 md:px-8 max-w-6xl mx-auto min-h-[calc(100vh-200px)]">
+          <div className="mb-6 md:mb-8 flex items-center justify-between">
+            <h1 className="text-xl md:text-2xl font-bold text-white">Settings</h1>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <CorexLoader />
             </div>
-
-            {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <CorexLoader />
+          ) : (
+            <>
+              <div className="flex md:hidden mb-4 overflow-x-auto no-scrollbar">
+                {SIDEBAR_ITEMS.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => handleSectionChange(id)}
+                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                      activeSection === id
+                        ? 'border-white text-white'
+                        : 'border-transparent text-surface-400 hover:text-surface-200'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    {label}
+                  </button>
+                ))}
               </div>
-            ) : (
-              <>
-                <div className="flex md:hidden mb-4 overflow-x-auto no-scrollbar">
-                  {SIDEBAR_ITEMS.map(({ id, label, icon: Icon }) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => handleSectionChange(id)}
-                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                        activeSection === id
-                          ? 'border-white text-white'
-                          : 'border-transparent text-surface-400 hover:text-surface-200'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      {label}
-                    </button>
-                  ))}
-                </div>
 
-                <div className="flex gap-6 items-start">
-                  <aside className="hidden md:block w-52 flex-shrink-0 sticky top-28">
-                    <nav className="space-y-0.5">
-                      {SIDEBAR_ITEMS.map(({ id, label, icon: Icon }) => (
-                        <motion.button
-                          key={id}
-                          onClick={() => handleSectionChange(id)}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.95 }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
-                            activeSection === id
-                              ? 'bg-white/10 text-white'
-                              : 'text-surface-400 hover:text-surface-200 hover:bg-white/5'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4 flex-shrink-0" />
-                          {label}
-                        </motion.button>
-                      ))}
-                    </nav>
-                  </aside>
-
-                  <div className="flex-1 min-w-0" key={resetKey}>
-                    {activeSection === 'profile' && (
-                      <div className="space-y-6 md:space-y-8 bg-surface-900/20 border border-white/5 rounded-xl p-4 md:p-6">
-                        <Suspense fallback={<CorexLoader />} >
-                          <ProfileSettings
-                            avatar={settings?.avatar}
-                            username={settings?.username}
-                            name={settings?.name}
-                            onDirty={handleDirty}
-                          />
-                          <div className="border-t border-white/5 pt-5 md:pt-6">
-                            <AboutSettings about={settings?.about} onDirty={handleDirty} />
-                          </div>
-                        </Suspense>
-                      </div>
-                    )}
-                    {activeSection === 'connections' && (
-                      <div className="bg-surface-900/20 border border-white/5 rounded-xl p-4 md:p-6">
-                        <Suspense fallback={<CorexLoader/>} >
-                          <ConnectionsSettings settings={settings} onRefresh={handleRefresh} />
-                        </Suspense>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </main>
-        </div>
-
-        <AnimatePresence>
-          {(hasDirty || saveSuccess) && (
-            <motion.div
-              initial={{ y: 80, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 80, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed bottom-6 left-0 right-0 flex justify-center z-50"
-            >
-              <motion.div
-                animate={{
-                  backgroundColor: saveSuccess
-                    ? 'rgb(6 78 59 / 0.97)'
-                    : barDanger
-                    ? 'rgb(127 29 29 / 0.97)'
-                    : 'rgb(17 17 17 / 0.97)',
-                  borderColor: saveSuccess
-                    ? 'rgb(52 211 153 / 0.35)'
-                    : barDanger
-                    ? 'rgb(239 68 68 / 0.55)'
-                    : 'rgb(255 255 255 / 0.15)',
-                }}
-                transition={{ duration: 0.22 }}
-                className="flex items-center gap-3 px-4 md:px-5 py-3 border rounded-xl shadow-2xl shadow-black/50 backdrop-blur-sm w-[calc(100vw-2rem)] max-w-2xl"
-              >
-                {saveSuccess ? (
-                  <>
-                    <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <span className="text-sm md:text-base text-emerald-400 font-medium">Changes saved!</span>
-                  </>
-                ) : (
-                  <>
-                    <motion.div
-                      animate={barDanger ? { rotate: [0, -15, 15, -10, 10, 0] } : { rotate: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="flex-shrink-0"
-                    >
-                      <AlertTriangle
-                        className={`w-5 h-5 md:w-6 md:h-6 transition-colors duration-200 ${
-                          barDanger ? 'text-red-400' : 'text-amber-400'
-                        }`}
-                      />
-                    </motion.div>
-                    <span
-                      className={`text-xs md:text-sm font-mono transition-colors duration-200 flex-1 min-w-0 ${
-                        barDanger ? 'text-red-300' : 'text-surface-300'
-                      }`}
-                    >
-                      Unsaved changes!
-                    </span>
-                    <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+              <div className="flex gap-6 items-start">
+                <aside className="hidden md:block w-52 flex-shrink-0 sticky top-28">
+                  <nav className="space-y-0.5">
+                    {SIDEBAR_ITEMS.map(({ id, label, icon: Icon }) => (
                       <motion.button
+                        key={id}
+                        onClick={() => handleSectionChange(id)}
                         whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.96 }}
-                        onClick={handleResetAll}
-                        disabled={saving}
-                        className={`px-3 py-1.5 text-xs md:text-sm font-semibold border font-unbounded rounded-lg transition-colors whitespace-nowrap ${
-                          barDanger
-                            ? 'text-red-300 border-red-500/40 hover:bg-red-500/10'
-                            : 'text-surface-300 hover:text-white border-white/15 hover:bg-white/5'
-                        }`}
-                      >
-                        Reset
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={handleSaveAll}
-                        disabled={saving}
-                        className={`px-3 py-1.5 text-xs md:text-sm font-semibold font-unbounded rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap ${
-                          barDanger
-                            ? 'text-white bg-red-500 hover:bg-red-400'
-                            : 'text-black bg-white hover:bg-gray-300'
+                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
+                          activeSection === id
+                            ? 'bg-white/10 text-white'
+                            : 'text-surface-400 hover:text-surface-200 hover:bg-white/5'
                         }`}
                       >
-                        {saving ? 'Saving...' : 'Save'}
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        {label}
                       </motion.button>
+                    ))}
+                  </nav>
+                </aside>
+
+                <div className="flex-1 min-w-0" key={resetKey}>
+                  {activeSection === 'profile' && (
+                    <div className="space-y-6 md:space-y-8 bg-surface-900/20 border border-white/5 rounded-xl p-4 md:p-6">
+                      <Suspense fallback={<CorexLoader />} >
+                        <ProfileSettings
+                          avatar={settings?.avatar}
+                          username={settings?.username}
+                          name={settings?.name}
+                          onDirty={handleDirty}
+                        />
+                        <div className="border-t border-white/5 pt-5 md:pt-6">
+                          <AboutSettings about={settings?.about} onDirty={handleDirty} />
+                        </div>
+                      </Suspense>
                     </div>
-                  </>
-                )}
-              </motion.div>
-            </motion.div>
+                  )}
+                  {activeSection === 'connections' && (
+                    <div className="bg-surface-900/20 border border-white/5 rounded-xl p-4 md:p-6">
+                      <Suspense fallback={<CorexLoader/>} >
+                        <ConnectionsSettings settings={settings} onRefresh={handleRefresh} />
+                      </Suspense>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
           )}
-        </AnimatePresence>
+        </main>
       </div>
-      <Footer />
-    </>
+
+      <AnimatePresence>
+        {(hasDirty || saveSuccess) && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="fixed bottom-6 left-0 right-0 flex justify-center z-50"
+          >
+            <motion.div
+              animate={{
+                backgroundColor: saveSuccess
+                  ? 'rgb(6 78 59 / 0.97)'
+                  : barDanger
+                  ? 'rgb(127 29 29 / 0.97)'
+                  : 'rgb(17 17 17 / 0.97)',
+                borderColor: saveSuccess
+                  ? 'rgb(52 211 153 / 0.35)'
+                  : barDanger
+                  ? 'rgb(239 68 68 / 0.55)'
+                  : 'rgb(255 255 255 / 0.15)',
+              }}
+              transition={{ duration: 0.22 }}
+              className="flex items-center gap-3 px-4 md:px-5 py-3 border rounded-xl shadow-2xl shadow-black/50 backdrop-blur-sm w-[calc(100vw-2rem)] max-w-2xl"
+            >
+              {saveSuccess ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span className="text-sm md:text-base text-emerald-400 font-medium">Changes saved!</span>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    animate={barDanger ? { rotate: [0, -15, 15, -10, 10, 0] } : { rotate: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="flex-shrink-0"
+                  >
+                    <AlertTriangle
+                      className={`w-5 h-5 md:w-6 md:h-6 transition-colors duration-200 ${
+                        barDanger ? 'text-red-400' : 'text-amber-400'
+                      }`}
+                    />
+                  </motion.div>
+                  <span
+                    className={`text-xs md:text-sm font-mono transition-colors duration-200 flex-1 min-w-0 ${
+                      barDanger ? 'text-red-300' : 'text-surface-300'
+                    }`}
+                  >
+                    Unsaved changes!
+                  </span>
+                  <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={handleResetAll}
+                      disabled={saving}
+                      className={`px-3 py-1.5 text-xs md:text-sm font-semibold border font-unbounded rounded-lg transition-colors whitespace-nowrap ${
+                        barDanger
+                          ? 'text-red-300 border-red-500/40 hover:bg-red-500/10'
+                          : 'text-surface-300 hover:text-white border-white/15 hover:bg-white/5'
+                      }`}
+                    >
+                      Reset
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleSaveAll}
+                      disabled={saving}
+                      className={`px-3 py-1.5 text-xs md:text-sm font-semibold font-unbounded rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap ${
+                        barDanger
+                          ? 'text-white bg-red-500 hover:bg-red-400'
+                          : 'text-black bg-white hover:bg-gray-300'
+                      }`}
+                    >
+                      {saving ? 'Saving...' : 'Save'}
+                    </motion.button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

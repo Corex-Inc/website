@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect } from "react";
-import { authService } from "@/lib/authService";
+import { authService } from "@/shared/services/authService";
 import { useAuthStore } from "../useAuthStore";
 
 interface AuthInitializerProps {

@@ -1,5 +1,5 @@
+import { PLATFORMS } from '@/shared/constants/constants';
 import { useInView } from '@/shared/hooks/useInView';
-import { PLATFORMS } from '../../data/constants';
 
 export default function Platforms() {
   const { ref, visible } = useInView();
