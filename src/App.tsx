@@ -3,6 +3,8 @@ import nprogress from 'nprogress';
 import { useEffect } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
 import { MainLayout } from './layouts/MainLayout';
+import { HeaderLayout } from './layouts/HeaderLayout';
+import { ProtectedLayout } from './layouts/ProtectedLayout';
 import { AuthCallback } from './pages/AuthCallback';
 import Docs from './pages/Documentation';
 import DocumentsLayout from './pages/documents/DocumentsLayout';
@@ -47,16 +49,54 @@ const router = createBrowserRouter([
     element: <AppRoot />,
     children: [
       {
-        index: true,
-        element: <HomePage />,
+        element: <MainLayout />, 
+        children: [
+          {
+            index: true,
+            element: <HomePage />,
+          },
+          {
+            path: "documentation/*",
+            element: <Docs />,
+          },
+          {
+            path: "documents",
+            element: <DocumentsLayout />,
+            children: [
+              {
+                index: true,
+                element: <TermsOfService />,
+              },
+              {
+                path: "terms",
+                element: <TermsOfService />,
+              },
+              {
+                path: "privacy",
+                element: <PrivacyPolicy />,
+              },
+            ],
+          },
+        ],
       },
       {
-        path: "meta",
-        element: <MetaPage />,
-      },
-      {
-        path: "documentation/*",
-        element: <Docs />,
+        element: <HeaderLayout />, 
+        children: [
+          {
+            path: "meta",
+            element: <MetaPage />,
+          },
+
+          {
+            element: <ProtectedLayout />,
+            children: [
+              {
+                path: "settings",
+                element: <SettingsPage />,
+              },
+            ],
+          },
+        ],
       },
       {
         path: "login/:provider",
@@ -66,36 +106,9 @@ const router = createBrowserRouter([
         path: "link/:provider",
         element: <AuthCallback />,
       },
-      {
-        element: <MainLayout />,
-        children: [
-          {
-            path: "settings",
-            element: <SettingsPage />,
-          }
-        ]
-      },
-      {
-        path: "documents",
-        element: <DocumentsLayout />,
-        children: [
-          {
-            index: true,
-            element: <TermsOfService />,
-          },
-          {
-            path: "terms",
-            element: <TermsOfService />,
-          },
-          {
-            path: "privacy",
-            element: <PrivacyPolicy />,
-          }
-        ]
-      }
-    ]
-  }
-])
+    ],
+  },
+]);
 
 function App() {
   return (
