@@ -356,7 +356,10 @@ export function MetaDetail({ item, selectedAddon }: MetaDetailProps) {
       <div className="bg-[#141414] border border-white/[0.05] rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300">
         
         <div className="mb-6 space-y-3">
-          <h1 className="text-[32px] font-semibold text-white font-unbounded tracking-tight">{item.name}</h1>
+          <h1 className="font-semibold text-white font-unbounded tracking-tight break-words"
+              style={{ fontSize: 'clamp(20px, 5vw, 32px)' }}>
+            {item.name}
+          </h1>
           
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs px-2.5 py-0.5 rounded font-medium bg-white/10 text-white/50 capitalize">
